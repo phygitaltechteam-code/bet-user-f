@@ -1,6 +1,16 @@
-import React, { useState } from 'react';
-import { Eye, EyeOff, X, MessageCircle, Send, Facebook, Instagram, Youtube, Twitter } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, {useState} from 'react';
+import {
+  Eye,
+  EyeOff,
+  X,
+  MessageCircle,
+  Send,
+  Facebook,
+  Instagram,
+  Youtube,
+  Twitter,
+} from 'lucide-react';
+import {motion} from 'framer-motion';
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -10,33 +20,35 @@ const Login: React.FC = () => {
   const orangeColor = '#ff4d00';
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 font-sans">
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white rounded-xl shadow-2xl border-2 border-[#ff4d00] overflow-hidden relative"
+    <div className="bg-gray-100 flex min-h-screen items-center justify-center p-4 font-sans">
+      <motion.div
+        initial={{opacity: 0, y: 20}}
+        animate={{opacity: 1, y: 0}}
+        className="relative w-full max-w-md overflow-hidden rounded-xl border-2 border-[#ff4d00] bg-white shadow-2xl"
       >
         {/* Close Button */}
-        <button className="absolute top-4 right-4 text-black hover:bg-gray-100 p-1 rounded-full transition-colors">
-          <X className="w-5 h-5" />
+        <button className="hover:bg-gray-100 absolute right-4 top-4 rounded-full p-1 text-black transition-colors">
+          <X className="h-5 w-5" />
         </button>
 
         {/* Header */}
-        <div className="pt-6 pb-2 text-center">
+        <div className="pb-2 pt-6 text-center">
           <h1 className="text-2xl font-bold text-[#ff4d00]">Login</h1>
-          <div className="w-full h-1 bg-[#ff4d00] mt-4 shadow-sm" />
+          <div className="mt-4 h-1 w-full bg-[#ff4d00] shadow-sm" />
         </div>
 
-        <div className="p-8 space-y-6">
+        <div className="space-y-6 p-8">
           {/* User ID Field */}
           <div className="space-y-1">
-            <div className="relative border-b border-gray-100 pb-1">
-              <label className="text-xs text-gray-500 font-medium ml-3">User ID</label>
+            <div className="border-gray-100 relative border-b pb-1">
+              <label className="text-gray-500 ml-3 text-xs font-medium">
+                User ID
+              </label>
               <input
                 type="text"
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
-                className="w-full bg-[#eef2ff] border border-slate-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#ff4d00] transition-all"
+                className="w-full rounded-md border border-slate-700 bg-[#eef2ff] px-3 py-2 text-sm transition-all focus:outline-none focus:ring-1 focus:ring-[#ff4d00]"
               />
             </div>
           </div>
@@ -44,20 +56,26 @@ const Login: React.FC = () => {
           {/* Password Field */}
           <div className="space-y-1">
             <div className="relative">
-              <label className="text-xs text-gray-500 font-medium ml-3">Password</label>
+              <label className="text-gray-500 ml-3 text-xs font-medium">
+                Password
+              </label>
               <div className="relative">
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-[#eef2ff] border border-slate-700 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#ff4d00] transition-all pr-10"
+                  className="w-full rounded-md border border-slate-700 bg-[#eef2ff] px-3 py-2 pr-10 text-sm transition-all focus:outline-none focus:ring-1 focus:ring-[#ff4d00]"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 hover:text-black transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 transition-colors hover:text-black"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
                 </button>
               </div>
             </div>
@@ -68,9 +86,12 @@ const Login: React.FC = () => {
             <input
               type="checkbox"
               id="remember"
-              className="w-5 h-5 border-2 border-slate-800 rounded checked:bg-[#ff4d00] transition-all cursor-pointer accent-[#ff4d00]"
+              className="h-5 w-5 cursor-pointer rounded border-2 border-slate-800 accent-[#ff4d00] transition-all checked:bg-[#ff4d00]"
             />
-            <label htmlFor="remember" className="text-sm font-medium text-slate-800 cursor-pointer">
+            <label
+              htmlFor="remember"
+              className="cursor-pointer text-sm font-medium text-slate-800"
+            >
               Remember me
             </label>
           </div>
@@ -78,16 +99,16 @@ const Login: React.FC = () => {
           {/* Buttons */}
           <div className="grid grid-cols-2 gap-4 pt-2">
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-[#0f172a] text-white font-bold py-3 rounded-lg shadow-[0_0_15px_rgba(255,77,0,0.4)] hover:shadow-[0_0_20px_rgba(255,77,0,0.6)] transition-all"
+              whileHover={{scale: 1.02}}
+              whileTap={{scale: 0.98}}
+              className="rounded-lg bg-[#0f172a] py-3 font-bold text-white shadow-[0_0_15px_rgba(255,77,0,0.4)] transition-all hover:shadow-[0_0_20px_rgba(255,77,0,0.6)]"
             >
               Login
             </motion.button>
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="bg-[#0f172a] text-white font-bold py-3 rounded-lg shadow-[0_0_15px_rgba(255,77,0,0.4)] hover:shadow-[0_0_20px_rgba(255,77,0,0.6)] transition-all"
+              whileHover={{scale: 1.02}}
+              whileTap={{scale: 0.98}}
+              className="rounded-lg bg-[#0f172a] py-3 font-bold text-white shadow-[0_0_15px_rgba(255,77,0,0.4)] transition-all hover:shadow-[0_0_20px_rgba(255,77,0,0.6)]"
             >
               Demo ID
             </motion.button>
@@ -101,15 +122,29 @@ const Login: React.FC = () => {
           </div>
 
           {/* Social Links */}
-          <div className="text-center space-y-4">
-            <p className="text-sm font-semibold text-slate-700">Connect with us</p>
-            <div className="flex justify-center flex-wrap gap-2">
-              <SocialIcon icon={<MessageCircle className="w-5 h-5 text-green-500 fill-green-500/20" />} />
-              <SocialIcon icon={<Send className="w-5 h-5 text-sky-500" />} />
-              <SocialIcon icon={<Facebook className="w-5 h-5 text-blue-600 fill-blue-600" />} />
-              <SocialIcon icon={<Instagram className="w-5 h-5 text-pink-600" />} />
-              <SocialIcon icon={<Twitter className="w-5 h-5 text-black" />} />
-              <SocialIcon icon={<Youtube className="w-5 h-5 text-red-600 fill-red-600" />} />
+          <div className="space-y-4 text-center">
+            <p className="text-sm font-semibold text-slate-700">
+              Connect with us
+            </p>
+            <div className="flex flex-wrap justify-center gap-2">
+              <SocialIcon
+                icon={
+                  <MessageCircle className="h-5 w-5 fill-green-500/20 text-green-500" />
+                }
+              />
+              <SocialIcon icon={<Send className="h-5 w-5 text-sky-500" />} />
+              <SocialIcon
+                icon={
+                  <Facebook className="h-5 w-5 fill-blue-600 text-blue-600" />
+                }
+              />
+              <SocialIcon
+                icon={<Instagram className="h-5 w-5 text-pink-600" />}
+              />
+              <SocialIcon icon={<Twitter className="h-5 w-5 text-black" />} />
+              <SocialIcon
+                icon={<Youtube className="h-5 w-5 fill-red-600 text-red-600" />}
+              />
             </div>
           </div>
         </div>
@@ -118,8 +153,8 @@ const Login: React.FC = () => {
   );
 };
 
-const SocialIcon: React.FC<{ icon: React.ReactNode }> = ({ icon }) => (
-  <button className="w-10 h-10 flex items-center justify-center border border-slate-300 rounded-lg hover:bg-gray-50 hover:border-slate-400 transition-all">
+const SocialIcon: React.FC<{icon: React.ReactNode}> = ({icon}) => (
+  <button className="hover:bg-gray-50 flex h-10 w-10 items-center justify-center rounded-lg border border-slate-300 transition-all hover:border-slate-400">
     {icon}
   </button>
 );

@@ -69,11 +69,15 @@ function GenericTable<T extends Record<string, any>>({
 
   const getSortIcon = (field: string) => {
     if (sortField !== field) {
-      return <i className="fa-solid fa-sort sort-icon text-gray-400 text-xs ml-1"></i>;
+      return (
+        <i className="fa-solid fa-sort sort-icon text-gray-400 ml-1 text-xs"></i>
+      );
     }
-    return sortDirection === 'asc' 
-      ? <i className="fa-solid fa-sort-up sort-icon text-gray-600 text-xs ml-1"></i>
-      : <i className="fa-solid fa-sort-down sort-icon text-gray-600 text-xs ml-1"></i>;
+    return sortDirection === 'asc' ? (
+      <i className="fa-solid fa-sort-up sort-icon text-gray-600 ml-1 text-xs"></i>
+    ) : (
+      <i className="fa-solid fa-sort-down sort-icon text-gray-600 ml-1 text-xs"></i>
+    );
   };
 
   const getKey = (row: T, index: number) => {
@@ -101,20 +105,24 @@ function GenericTable<T extends Record<string, any>>({
   };
 
   return (
-    <div className="overflow-x-auto table-container">
-      <table className="w-full text-left text-sm whitespace-nowrap">
-        <thead className="bg-brand-gray text-brand-text font-semibold border-b border-brand-border">
+    <div className="table-container overflow-x-auto">
+      <table className="w-full whitespace-nowrap text-left text-sm">
+        <thead className="border-b border-brand-border bg-brand-gray font-semibold text-brand-text">
           <tr>
             {columns.map((column) => (
               <th
                 key={column.key}
-                className={`px-4 py-3 cursor-pointer hover:bg-gray-200 transition-colors ${column.className || ''}`}
-                style={{ width: column.width }}
-                onClick={() => column.sortable !== false && onSort && handleSort(column.key)}
+                className={`hover:bg-gray-200 cursor-pointer px-4 py-3 transition-colors ${column.className || ''}`}
+                style={{width: column.width}}
+                onClick={() =>
+                  column.sortable !== false && onSort && handleSort(column.key)
+                }
               >
                 <span className="flex items-center gap-1">
                   {column.label}
-                  {column.sortable !== false && onSort && getSortIcon(column.key)}
+                  {column.sortable !== false &&
+                    onSort &&
+                    getSortIcon(column.key)}
                 </span>
               </th>
             ))}
@@ -130,7 +138,7 @@ function GenericTable<T extends Record<string, any>>({
             <tr>
               <td
                 colSpan={columns.length + (actions.length > 0 ? 1 : 0)}
-                className="px-4 py-12 text-center text-gray-500 font-medium bg-white"
+                className="text-gray-500 bg-white px-4 py-12 text-center font-medium"
               >
                 {emptyMessage}
               </td>
@@ -162,7 +170,7 @@ function GenericTable<T extends Record<string, any>>({
                                 e.stopPropagation();
                                 action.onClick(row, index);
                               }}
-                              className="action-btn w-7 h-7 inline-flex items-center justify-center border border-stroke rounded-md text-gray-600 bg-white hover:bg-gray-100 transition-all"
+                              className="action-btn text-gray-600 hover:bg-gray-100 inline-flex h-7 w-7 items-center justify-center rounded-md border border-stroke bg-white transition-all"
                               title={action.title}
                             >
                               {action.icon}
@@ -189,12 +197,16 @@ export const defaultActions = {
     onClick,
   }),
   transfer: (onClick: (row: any, index: number) => void): Action => ({
-    icon: <i className="fa-solid fa-arrow-right-arrow-left text-gray-600 text-sm"></i>,
+    icon: (
+      <i className="fa-solid fa-arrow-right-arrow-left text-gray-600 text-sm"></i>
+    ),
     title: 'Transfer',
     onClick,
   }),
   history: (onClick: (row: any, index: number) => void): Action => ({
-    icon: <i className="fa-solid fa-clock-rotate-left text-gray-600 text-sm"></i>,
+    icon: (
+      <i className="fa-solid fa-clock-rotate-left text-gray-600 text-sm"></i>
+    ),
     title: 'History',
     onClick,
   }),

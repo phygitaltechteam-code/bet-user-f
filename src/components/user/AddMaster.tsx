@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { X, Eye, EyeOff } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, {useState} from 'react';
+import {X, Eye, EyeOff} from 'lucide-react';
+import {motion} from 'framer-motion';
 
 interface AddMasterProps {
   onClose?: () => void;
   onSuccess?: () => void;
 }
 
-export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
+export default function AddMaster({onClose, onSuccess}: AddMasterProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,17 +27,17 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const {name, value} = e.target;
+    setFormData((prev) => ({...prev, [name]: value}));
     // Clear error for this field when user starts typing
     if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({...prev, [name]: ''}));
     }
   };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.username.trim()) {
       newErrors.username = 'Username is required';
     }
@@ -53,33 +53,33 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
+
     return newErrors;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const newErrors = validateForm();
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // Add your API call here
       console.log('Form submitted:', formData);
-      
+
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // Call success callback
       if (onSuccess) {
         onSuccess();
       }
-      
+
       // Close modal
       if (onClose) {
         onClose();
@@ -95,13 +95,14 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
     `w-full px-3 py-2 bg-[#E9ECEF] border rounded text-[#495057] placeholder:text-[#6C757D] focus:outline-none focus:ring-1 focus:ring-[#80BDFF] focus:border-[#80BDFF] transition-all ${
       hasError ? 'border-red-500' : 'border-[#CED4DA]'
     }`;
-  
-  const labelClasses = 'col-5 col-sm-4 col-form-label text-right font-bold text-[#343A40] text-sm md:text-base';
+
+  const labelClasses =
+    'col-5 col-sm-4 col-form-label text-right font-bold text-[#343A40] text-sm md:text-base';
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{opacity: 0, scale: 0.95}}
+      animate={{opacity: 1, scale: 1}}
       className="mx-auto w-full max-w-[700px] overflow-hidden rounded bg-white font-sans shadow-xl"
     >
       {/* Header */}
@@ -116,11 +117,10 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
       </div>
 
       {/* Form Content - Using Bootstrap-like grid layout from the HTML */}
-      <form onSubmit={handleSubmit} className="pt-4 px-6 pb-6 addForm">
-        
+      <form onSubmit={handleSubmit} className="addForm px-6 pb-6 pt-4">
         {/* User Name */}
         <div className="form-group row mb-3 flex items-center">
-          <label className={`${labelClasses} w-[30%] sm:w-[25%] pr-2`}>
+          <label className={`${labelClasses} w-[30%] pr-2 sm:w-[25%]`}>
             User Name <span className="text-red-500">*</span>
           </label>
           <div className="w-[70%] sm:w-[75%]">
@@ -133,7 +133,7 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
               onChange={handleChange}
             />
             {errors.username && (
-              <span className="validation-message text-red-500 text-xs mt-1 block">
+              <span className="validation-message mt-1 block text-xs text-red-500">
                 {errors.username}
               </span>
             )}
@@ -142,7 +142,7 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
 
         {/* Name */}
         <div className="form-group row mb-3 flex items-center">
-          <label className={`${labelClasses} w-[30%] sm:w-[25%] pr-2`}>
+          <label className={`${labelClasses} w-[30%] pr-2 sm:w-[25%]`}>
             Name
           </label>
           <div className="w-[70%] sm:w-[75%]">
@@ -159,7 +159,7 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
 
         {/* Rate */}
         <div className="form-group row mb-3 flex items-center">
-          <label className={`${labelClasses} w-[30%] sm:w-[25%] pr-2`}>
+          <label className={`${labelClasses} w-[30%] pr-2 sm:w-[25%]`}>
             Rate
           </label>
           <div className="w-[70%] sm:w-[75%]">
@@ -176,7 +176,7 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
 
         {/* Balance */}
         <div className="form-group row mb-3 flex items-center">
-          <label className={`${labelClasses} w-[30%] sm:w-[25%] pr-2`}>
+          <label className={`${labelClasses} w-[30%] pr-2 sm:w-[25%]`}>
             Balance <span className="text-red-500">*</span>
           </label>
           <div className="w-[70%] sm:w-[75%]">
@@ -189,19 +189,16 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
               onChange={handleChange}
             />
             {errors.balance && (
-              <span className="validation-message text-red-500 text-xs mt-1 block">
+              <span className="validation-message mt-1 block text-xs text-red-500">
                 {errors.balance}
               </span>
             )}
           </div>
         </div>
 
-      
-
-
         {/* Password */}
         <div className="form-group row mb-3 flex items-center">
-          <label className={`${labelClasses} w-[30%] sm:w-[25%] pr-2`}>
+          <label className={`${labelClasses} w-[30%] pr-2 sm:w-[25%]`}>
             Password <span className="text-red-500">*</span>
           </label>
           <div className="w-[70%] sm:w-[75%]">
@@ -218,13 +215,13 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 absolute right-3 top-1/2 -translate-y-1/2"
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {errors.password && (
-              <span className="validation-message text-red-500 text-xs mt-1 block">
+              <span className="validation-message mt-1 block text-xs text-red-500">
                 {errors.password}
               </span>
             )}
@@ -233,7 +230,7 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
 
         {/* Confirm Password */}
         <div className="form-group row mb-3 flex items-center">
-          <label className={`${labelClasses} w-[30%] sm:w-[25%] pr-2`}>
+          <label className={`${labelClasses} w-[30%] pr-2 sm:w-[25%]`}>
             Confirm Password <span className="text-red-500">*</span>
           </label>
           <div className="w-[70%] sm:w-[75%]">
@@ -250,13 +247,13 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="text-gray-500 hover:text-gray-700 absolute right-3 top-1/2 -translate-y-1/2"
               >
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
             {errors.confirmPassword && (
-              <span className="validation-message text-red-500 text-xs mt-1 block">
+              <span className="validation-message mt-1 block text-xs text-red-500">
                 {errors.confirmPassword}
               </span>
             )}
@@ -264,11 +261,11 @@ export default function AddMaster({ onClose, onSuccess }: AddMasterProps) {
         </div>
 
         {/* Modal Footer with Create Button */}
-        <div className="modal-footer mt-6 flex justify-end pt-4 border-t border-stroke">
+        <div className="modal-footer mt-6 flex justify-end border-t border-stroke pt-4">
           <button
             type="submit"
             disabled={isSubmitting}
-            className="btn btn-primary rounded-md bg-gradient-to-b from-[#F2C94C] to-[#E2B72E] px-8 py-2 text-base font-bold text-black shadow-md transition-all duration-200 hover:from-[#E2B72E] hover:to-[#D4A626] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn btn-primary rounded-md bg-gradient-to-b from-[#F2C94C] to-[#E2B72E] px-8 py-2 text-base font-bold text-black shadow-md transition-all duration-200 hover:from-[#E2B72E] hover:to-[#D4A626] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isSubmitting ? 'Creating...' : 'Create'}
           </button>

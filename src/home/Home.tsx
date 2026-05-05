@@ -1,6 +1,6 @@
-import React from 'react';
-import {Play, Tv, MonitorPlay} from 'lucide-react';
-import {motion} from 'framer-motion';
+import React, {useState} from 'react';
+import {Play, Tv, MonitorPlay, ChevronDown} from 'lucide-react';
+import {motion, AnimatePresence} from 'framer-motion';
 
 // Types
 interface Odds {
@@ -212,51 +212,102 @@ const MOCK_DATA: Category[] = [
 ];
 
 const OddsButton = ({back, lay}: {back: string; lay: string}) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <div className="flex h-full w-full max-w-[200px] gap-[2px] sm:h-9">
-      <button
-        id="odds-back-btn"
-        className={`font-mono flex flex-1 cursor-pointer items-center justify-center rounded-sm text-sm font-medium transition-colors ${
-          back ? 'bg-[#72c1e8] text-black hover:bg-[#5dafd6]' : 'bg-gray-100'
+      <motion.button
+        whileHover={{scale: 1.02, y: -1}}
+        whileTap={{scale: 0.98}}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
+        className={`font-mono relative flex flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-md text-sm font-semibold transition-all duration-200 ${
+          back
+            ? 'bg-gradient-to-r from-[#72c1e8] to-[#5dafd6] text-black hover:shadow-md'
+            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
         }`}
+        disabled={!back}
       >
-        {back}
-      </button>
-      <button
-        id="odds-lay-btn"
-        className={`font-mono flex flex-1 cursor-pointer items-center justify-center rounded-sm text-sm font-medium transition-colors ${
-          lay ? 'bg-[#f48fb1] text-black hover:bg-[#f06292]' : 'bg-gray-100'
+        {isHovered && back && (
+          <motion.div
+            initial={{x: '-100%'}}
+            animate={{x: '100%'}}
+            transition={{duration: 0.6, repeat: Infinity}}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+          />
+        )}
+        <span className="relative z-10">{back || '-'}</span>
+      </motion.button>
+      <motion.button
+        whileHover={{scale: 1.02, y: -1}}
+        whileTap={{scale: 0.98}}
+        onHoverStart={() => setIsHovered(true)}
+        onHoverEnd={() => setIsHovered(false)}
+        className={`font-mono relative flex flex-1 cursor-pointer items-center justify-center overflow-hidden rounded-md text-sm font-semibold transition-all duration-200 ${
+          lay
+            ? 'bg-gradient-to-r from-[#f48fb1] to-[#f06292] text-black hover:shadow-md'
+            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
         }`}
+        disabled={!lay}
       >
-        {lay}
-      </button>
+        {isHovered && lay && (
+          <motion.div
+            initial={{x: '-100%'}}
+            animate={{x: '100%'}}
+            transition={{duration: 0.6, repeat: Infinity}}
+            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
+          />
+        )}
+        <span className="relative z-10">{lay || '-'}</span>
+      </motion.button>
     </div>
   );
 };
 
-const MatchRow: React.FC<{match: Match}> = ({match}) => {
+const MatchRow: React.FC<{match: Match; index: number}> = ({match, index}) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   return (
     <motion.div
-      initial={{opacity: 0, y: 5}}
+      initial={{opacity: 0, y: 10}}
       animate={{opacity: 1, y: 0}}
+      transition={{delay: index * 0.05}}
       layout
-      className="border-gray-200 hover:bg-gray-50 flex flex-col items-start border-b bg-white px-4 py-3 transition-colors sm:flex-row sm:items-center sm:py-2"
+      whileHover={{backgroundColor: 'rgba(0,0,0,0.02)'}}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className="border-gray-100 hover:bg-gray-50/80 relative flex flex-col items-start overflow-hidden border-b bg-white px-3 py-3 transition-all duration-200 sm:flex-row sm:items-center sm:px-4 sm:py-2"
       id={`match-${match.id}`}
     >
+      {/* Animated hover gradient */}
+      {isHovered && (
+        <motion.div
+          initial={{x: '-100%'}}
+          animate={{x: '100%'}}
+          transition={{duration: 0.8, repeat: Infinity}}
+          className="pointer-events-none absolute inset-0 bg-gradient-to-r from-transparent via-orange-100/20 to-transparent"
+        />
+      )}
+
       {/* Left Info Column */}
       <div className="mb-3 w-full flex-1 sm:mb-0 sm:w-auto">
         <div className="flex flex-wrap items-center gap-2">
           {match.isLive && (
-            <span className="flex items-center gap-1 rounded bg-[#ee4444] px-1.5 py-0.5 text-[10px] font-bold uppercase text-white">
+            <motion.span
+              initial={{scale: 0}}
+              animate={{scale: 1}}
+              className="flex items-center gap-1 rounded bg-gradient-to-r from-red-600 to-red-500 px-1.5 py-0.5 text-[10px] font-bold uppercase text-white shadow-md"
+            >
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" />
               Live
-            </span>
+            </motion.span>
           )}
           {!match.isLive && match.time && (
-            <span className="text-gray-600 font-mono whitespace-nowrap text-xs font-medium">
+            <span className="text-gray-500 font-mono whitespace-nowrap text-[11px] font-medium">
               {match.time}
             </span>
           )}
-          <span className="text-gray-900 max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap text-sm font-bold">
+          <span className="text-gray-800 max-w-[280px] overflow-hidden text-ellipsis whitespace-nowrap text-sm font-bold">
             {match.teams}
           </span>
         </div>
@@ -265,33 +316,40 @@ const MatchRow: React.FC<{match: Match}> = ({match}) => {
       {/* Middle Icons Column */}
       <div className="mb-3 mr-4 flex min-w-[100px] items-center gap-1.5 sm:mb-0">
         {match.streamingAvailable && (
-          <div className="flex items-center justify-center rounded-sm bg-[#2e7d32] p-1 text-white">
+          <motion.div
+            whileHover={{scale: 1.1, rotate: 360}}
+            transition={{duration: 0.3}}
+            className="flex cursor-pointer items-center justify-center rounded-md bg-[#2e7d32] p-1 text-white shadow-sm"
+          >
             <MonitorPlay size={14} fill="currentColor" />
-          </div>
+          </motion.div>
         )}
         {match.tvAvailable && (
-          <div className="flex items-center justify-center rounded-sm bg-[#4a148c] p-1 text-white">
+          <motion.div
+            whileHover={{scale: 1.1, rotate: 360}}
+            transition={{duration: 0.3}}
+            className="flex cursor-pointer items-center justify-center rounded-md bg-[#4a148c] p-1 text-white shadow-sm"
+          >
             <Tv size={14} fill="currentColor" />
-          </div>
+          </motion.div>
         )}
-        {/* Placeholder for specific brand icons */}
-        <div className="flex h-6 w-7 items-center justify-center rounded-sm bg-cyan-800 p-1 text-[8px] font-bold text-white">
+        <div className="flex h-6 w-7 items-center justify-center rounded-md bg-gradient-to-br from-cyan-800 to-cyan-700 p-1 text-[8px] font-bold text-white shadow-sm">
           8M
         </div>
-        <div className="flex h-6 w-7 items-center justify-center rounded-sm bg-purple-800 p-1 text-[8px] font-bold text-white">
+        <div className="flex h-6 w-7 items-center justify-center rounded-md bg-gradient-to-br from-purple-800 to-purple-700 p-1 text-[8px] font-bold text-white shadow-sm">
           F
         </div>
       </div>
 
       {/* Odds Grid */}
-      <div className="grid w-full grid-cols-3 gap-3 sm:gap-6 lg:w-auto">
-        <div className="w-full lg:w-44">
+      <div className="grid w-full grid-cols-3 gap-2 sm:gap-4 lg:w-auto">
+        <div className="w-full sm:w-36 lg:w-44">
           <OddsButton {...match.odds.one} />
         </div>
-        <div className="w-full lg:w-44">
+        <div className="w-full sm:w-36 lg:w-44">
           <OddsButton {...match.odds.x} />
         </div>
-        <div className="w-full lg:w-44">
+        <div className="w-full sm:w-36 lg:w-44">
           <OddsButton {...match.odds.two} />
         </div>
       </div>
@@ -300,60 +358,88 @@ const MatchRow: React.FC<{match: Match}> = ({match}) => {
 };
 
 const CategorySection: React.FC<{category: Category}> = ({category}) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+
   return (
-    <div
-      className="mb-6 w-full overflow-hidden rounded-t-lg shadow-sm"
+    <motion.div
+      initial={{opacity: 0, y: 20}}
+      animate={{opacity: 1, y: 0}}
+      transition={{duration: 0.3}}
+      className="mb-6 w-full overflow-hidden rounded-xl shadow-md"
       id={`category-${category.title.toLowerCase()}`}
     >
-      <div className="bg-[#f05a28] px-4 py-2 text-sm font-bold tracking-wide text-white">
-        {category.title}
-      </div>
+      {/* Category Header with Collapse */}
+      <motion.div
+        whileHover={{backgroundColor: '#f05a28'}}
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex cursor-pointer items-center justify-between bg-gradient-to-r from-[#f05a28] to-[#f07828] px-4 py-2.5"
+      >
+        <h2 className="text-sm font-bold tracking-wide text-white">
+          {category.title}
+        </h2>
+        <motion.div
+          animate={{rotate: isExpanded ? 180 : 0}}
+          transition={{duration: 0.3}}
+          className="text-white"
+        >
+          <ChevronDown size={18} />
+        </motion.div>
+      </motion.div>
 
-      {/* Odds Header Labels - hidden on mobile, aligned on sm+ */}
-      <div className="border-gray-100 hidden grid-cols-[1fr_100px_488px] border-b bg-white px-4 py-2 sm:grid sm:grid-cols-[1fr_100px_540px] lg:grid-cols-[1fr_100px_576px]">
+      {/* Desktop Header Labels */}
+      <div className="border-gray-100 bg-gray-50/50 hidden grid-cols-[1fr_100px_488px] border-b px-4 py-2 sm:grid sm:grid-cols-[1fr_100px_540px] lg:grid-cols-[1fr_100px_576px]">
         <div className="flex-1"></div>
         <div className="mr-4 min-w-[100px]"></div>
         <div className="grid w-full grid-cols-3 gap-3 sm:gap-6">
-          <div className="flex justify-center">
-            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#999] text-[10px] font-bold text-white">
-              1
+          {['1', 'X', '2'].map((label, idx) => (
+            <div key={label} className="flex justify-center">
+              <div className="from-gray-500 to-gray-600 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r text-[10px] font-bold text-white shadow-sm">
+                {label}
+              </div>
             </div>
-          </div>
-          <div className="flex justify-center">
-            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#999] text-[10px] font-bold text-white">
-              X
-            </div>
-          </div>
-          <div className="flex justify-center">
-            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-[#999] text-[10px] font-bold text-white">
-              2
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      <div className="flex flex-col">
-        {category.matches.map((match) => (
-          <MatchRow key={match.id} match={match} />
-        ))}
-      </div>
-    </div>
+      {/* Matches List */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{height: 0, opacity: 0}}
+            animate={{height: 'auto', opacity: 1}}
+            exit={{height: 0, opacity: 0}}
+            transition={{duration: 0.3}}
+            className="flex flex-col"
+          >
+            {category.matches.map((match, idx) => (
+              <MatchRow key={match.id} match={match} index={idx} />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 };
 
 function Home() {
   return (
-    <div className="min-h-screen bg-[#f4f4f4]" id="home-container">
-      <main className="px-0 py-6 sm:px-4">
-        {MOCK_DATA.map((category) => (
-          <CategorySection key={category.title} category={category} />
-        ))}
+    <div
+      className="from-gray-100 to-gray-200 min-h-screen bg-gradient-to-b"
+      id="home-container"
+    >
+      <main className="px-3 py-4 sm:px-4 md:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          {MOCK_DATA.map((category) => (
+            <CategorySection key={category.title} category={category} />
+          ))}
+        </div>
       </main>
 
       {/* Responsive Info Note */}
-      <div className="text-gray-400 p-8 text-center text-xs">
+      <div className="text-gray-500 p-6 text-center text-xs">
         <div className="mx-auto max-w-md">
-          <p>
+          <p className="flex items-center justify-center gap-1">
+            <span className="inline-block h-1.5 w-1.5 animate-pulse rounded-full bg-green-500"></span>
             This dashboard displays the latest odds and live markets. Click on a
             selection to add it to your betslip.
           </p>

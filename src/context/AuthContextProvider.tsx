@@ -1,10 +1,10 @@
-import { ReactNode, useEffect, useState } from 'react';
-import { AuthContext } from './AuthContext';
-import { Token, User } from '@/types';
-import { QUERY_KEYS } from '@/lib/react-query/queryKeys';
-import { jwtDecode } from 'jwt-decode';
+import {ReactNode, useEffect, useState} from 'react';
+import {AuthContext} from './AuthContext';
+import {Token, User} from '@/types';
+import {QUERY_KEYS} from '@/lib/react-query/queryKeys';
+import {jwtDecode} from 'jwt-decode';
 
-const AuthContextProvider = ({ children }: { children: ReactNode }) => {
+const AuthContextProvider = ({children}: {children: ReactNode}) => {
   const [user, setUser] = useState<User | null>(null);
   const [role, setRole] = useState<string | null>(null);
   const [token, setToken] = useState<Token | null>(null);
@@ -13,7 +13,7 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const storedToken = localStorage.getItem(QUERY_KEYS.TOKEN);
-    
+
     // Check if token exists and is not null
     if (storedToken && storedToken !== 'null' && storedToken !== 'undefined') {
       try {
@@ -23,12 +23,12 @@ const AuthContextProvider = ({ children }: { children: ReactNode }) => {
           localToken = JSON.parse(storedToken);
         } else {
           // For demo token string
-          localToken = { accessToken: storedToken };
+          localToken = {accessToken: storedToken};
         }
 
         if (localToken && localToken.accessToken) {
           const decodedToken: User = jwtDecode(localToken.accessToken);
-          
+
           // Check if token is expired
           if (decodedToken.exp && decodedToken.exp * 1000 < Date.now()) {
             localStorage.removeItem(QUERY_KEYS.TOKEN);

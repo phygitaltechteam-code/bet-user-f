@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Outlet } from '@tanstack/react-router';
+import React, {useState, useEffect} from 'react';
+import {Outlet} from '@tanstack/react-router';
 import Header from '@/components/Header';
 import Sidebar from '@/components/Sidebar';
 import BottomNav from './BottomNav';
@@ -26,7 +26,7 @@ export default function AppLayout() {
 
   const getMarginLeft = () => {
     if (isMobile) return 'ml-0';
-    return isCollapsed ? 'ml-20' : 'ml-64';
+    return isCollapsed ? 'ml-20' : 'ml-[260px]';
   };
 
   const getPaddingBottom = () => {
@@ -35,23 +35,20 @@ export default function AppLayout() {
 
   return (
     <div className="h-screen overflow-hidden bg-[#F5F5F5] selection:bg-orange-500 selection:text-white">
-      <Header 
-        sidebarOpen={sidebarOpen} 
-        setSidebarOpen={setSidebarOpen} 
-      />
-      
-      <div className="flex relative h-[calc(100vh-6rem)] lg:h-[calc(100vh-6rem)]">
-        <Sidebar 
-          sidebarOpen={sidebarOpen} 
+      <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+      <div className="relative flex h-[calc(100vh-7.5rem)] lg:h-[calc(100vh-6rem)]">
+        <Sidebar
+          sidebarOpen={sidebarOpen}
           setSidebarOpen={setSidebarOpen}
           onCollapseChange={setIsCollapsed}
           isMobile={isMobile}
+          headerHeight={120} // h-24 = 96px
         />
-        
-        <main 
-          className={`flex-1 transition-all duration-300 overflow-y-auto ${getMarginLeft()} ${getPaddingBottom()}`}
+
+        <main
+          className={`flex-1 overflow-y-auto transition-all duration-300 ${getMarginLeft()} ${getPaddingBottom()}`}
         >
-          {/* Removed all padding and margin from here */}
           <Outlet />
         </main>
       </div>

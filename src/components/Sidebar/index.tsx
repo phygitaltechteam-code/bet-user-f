@@ -22,6 +22,7 @@ interface SidebarProps {
   isMobile?: boolean;
   sidebarOpen?: boolean;
   setSidebarOpen?: (open: boolean) => void;
+  headerHeight?: number;
 }
 
 interface MenuItem {
@@ -46,6 +47,7 @@ const Sidebar = ({
   isMobile: isMobileProp,
   sidebarOpen,
   setSidebarOpen,
+  headerHeight = 96,
 }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -57,6 +59,7 @@ const Sidebar = ({
     new Set(['Sports']),
   );
   const [activeItemId, setActiveItemId] = useState('home');
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   useEffect(() => {
     const checkScreenSize = () => {
@@ -109,7 +112,6 @@ const Sidebar = ({
       icon: <MdPlayArrow size={22} className="text-red-500" />,
       path: '/play/play',
     },
-
     {
       label: 'Sports',
       id: 'sports',
@@ -143,10 +145,21 @@ const Sidebar = ({
     const isExpanded = expandedMenus.has(item.label);
     const isActive = activeItemId === item.id || item.path === currentPath;
     const isActuallyCollapsed = isCollapsed && !isMobile;
+    const isHovered = hoveredItem === item.id;
 
     return (
-      <li key={item.id} className="w-full">
-        <div
+      <motion.li
+        key={item.id}
+        initial={{opacity: 0, x: -20}}
+        animate={{opacity: 1, x: 0}}
+        transition={{duration: 0.3}}
+        className="w-full px-2"
+      >
+        <motion.div
+          whileHover={{x: isMobile ? 0 : 4}}
+          whileTap={{scale: 0.98}}
+          onHoverStart={() => setHoveredItem(item.id)}
+          onHoverEnd={() => setHoveredItem(null)}
           onClick={() => {
             if (hasSubroutes) {
               toggleSubmenu(item.label);
@@ -154,34 +167,67 @@ const Sidebar = ({
               handleNavigation(item.path, item.id);
             }
           }}
-          className={`group flex w-full cursor-pointer items-center justify-between rounded-lg px-3 py-2.5 transition-all duration-200 ${
+          className={`group relative flex w-full cursor-pointer items-center justify-between rounded-lg px-3 py-3 transition-all duration-200 ${
             isActive
               ? 'border-r-4 border-orange-600 bg-gradient-to-r from-orange-500/10 to-orange-500/5 text-orange-600'
               : 'text-gray-700 hover:bg-gray-100'
           }`}
         >
-          <div className="flex items-center gap-3">
-            <span className="relative inline-flex h-6 w-6 items-center justify-center">
+          {isHovered && !isActive && (
+            <motion.div
+              initial={{opacity: 0, scale: 0.8}}
+              animate={{opacity: 1, scale: 1}}
+              exit={{opacity: 0, scale: 0.8}}
+              className="absolute inset-0 rounded-lg bg-gradient-to-r from-orange-500/5 to-transparent"
+            />
+          )}
+
+          <div className="relative z-10 flex items-center gap-3">
+            <motion.span
+              className="relative inline-flex h-6 w-6 items-center justify-center"
+              animate={{
+                scale: isActive ? [1, 1.1, 1] : 1,
+                rotate: isHovered ? [0, -5, 5, 0] : 0,
+              }}
+              transition={{duration: 0.3}}
+            >
               {item.icon}
               {item.isLive && (
                 <span className="absolute -right-1 -top-1 flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75"></span>
+                  <motion.span
+                    animate={{scale: [1, 1.2, 1]}}
+                    transition={{duration: 1, repeat: Infinity}}
+                    className="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"
+                  />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500"></span>
                 </span>
               )}
-            </span>
+            </motion.span>
             {(!isActuallyCollapsed || isMobile) && (
-              <span className="text-sm font-bold tracking-tight">
+              <motion.span
+                className="text-sm font-bold tracking-tight"
+                animate={{
+                  color: isActive
+                    ? '#ea580c'
+                    : isHovered
+                      ? '#f97316'
+                      : '#374151',
+                }}
+              >
                 {item.label}
-              </span>
+              </motion.span>
             )}
           </div>
+
           {hasSubroutes && (!isActuallyCollapsed || isMobile) && (
-            <MdExpandMore
-              className={`text-gray-400 text-lg transition-transform duration-300 ${isExpanded ? 'rotate-180' : ''}`}
-            />
+            <motion.div
+              animate={{rotate: isExpanded ? 180 : 0}}
+              transition={{duration: 0.3}}
+            >
+              <MdExpandMore className="text-gray-400 text-lg" />
+            </motion.div>
           )}
-        </div>
+        </motion.div>
 
         <AnimatePresence>
           {hasSubroutes && isExpanded && (!isActuallyCollapsed || isMobile) && (
@@ -190,83 +236,201 @@ const Sidebar = ({
               animate={{height: 'auto', opacity: 1}}
               exit={{height: 0, opacity: 0}}
               transition={{duration: 0.2}}
-              className="bg-gray-50/50 overflow-hidden"
+              className="overflow-hidden"
             >
-              <ul className="border-gray-200 ml-9 mt-1 space-y-1 border-l py-1">
-                {item.subroutes?.map((sub) => (
-                  <li key={sub.id}>
-                    <div
-                      onClick={() =>
-                        sub.path && handleNavigation(sub.path, sub.id)
-                      }
-                      className={`flex cursor-pointer items-center gap-2 px-3 py-1.5 text-xs font-bold transition-colors ${
-                        activeItemId === sub.id || currentPath === sub.path
-                          ? 'text-orange-600'
-                          : 'text-gray-500 hover:text-gray-900'
-                      }`}
+              <motion.ul
+                className="mt-1 space-y-0.5 pl-4"
+                initial={{opacity: 0}}
+                animate={{opacity: 1}}
+                transition={{delay: 0.1}}
+              >
+                {item.subroutes?.map((sub, idx) => {
+                  const isSubActive =
+                    activeItemId === sub.id || currentPath === sub.path;
+                  return (
+                    <motion.li
+                      key={sub.id}
+                      initial={{opacity: 0, x: -10}}
+                      animate={{opacity: 1, x: 0}}
+                      transition={{delay: idx * 0.05}}
                     >
-                      {sub.icon && <span>{sub.icon}</span>}
-                      {sub.label}
-                    </div>
-                  </li>
-                ))}
-              </ul>
+                      <motion.div
+                        whileHover={{x: 4}}
+                        whileTap={{scale: 0.98}}
+                        onClick={() =>
+                          sub.path && handleNavigation(sub.path, sub.id)
+                        }
+                        className={`flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                          isSubActive
+                            ? 'bg-orange-50/80 text-orange-600'
+                            : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+                        }`}
+                      >
+                        <motion.span
+                          className="flex-shrink-0"
+                          animate={{
+                            scale: isSubActive ? [1, 1.1, 1] : 1,
+                          }}
+                          transition={{duration: 0.3}}
+                        >
+                          {sub.icon}
+                        </motion.span>
+                        <span className="flex-1 whitespace-nowrap">
+                          {sub.label}
+                        </span>
+
+                        {isSubActive && (
+                          <motion.div
+                            initial={{scale: 0}}
+                            animate={{scale: 1}}
+                            className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-orange-500"
+                          />
+                        )}
+                      </motion.div>
+                    </motion.li>
+                  );
+                })}
+              </motion.ul>
             </motion.div>
           )}
         </AnimatePresence>
-      </li>
+      </motion.li>
     );
-  };
-
-  // Desktop sidebar width
-  const getSidebarWidth = () => {
-    if (isMobile) return 'w-64';
-    return isCollapsed ? 'w-20' : 'w-64';
   };
 
   return (
     <>
-      {/* Mobile overlay - only shows when sidebar is open on mobile */}
-      {isMobile && sidebarOpen && (
-        <motion.div
-          initial={{opacity: 0}}
-          animate={{opacity: 1}}
-          exit={{opacity: 0}}
-          className="fixed inset-0 z-40 bg-black/70 backdrop-blur-sm"
-          onClick={() => setSidebarOpen && setSidebarOpen(false)}
-        />
-      )}
+      {/* Mobile overlay - with blur effect when sidebar is open */}
+      <AnimatePresence>
+        {isMobile && sidebarOpen && (
+          <motion.div
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            exit={{opacity: 0}}
+            transition={{duration: 0.3}}
+            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            onClick={() => setSidebarOpen && setSidebarOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
-      {/* Sidebar - Slides from left on mobile */}
+      {/* Sidebar - Different styles for mobile vs desktop */}
       <motion.aside
         initial={false}
         animate={{
           x: isMobile ? (sidebarOpen ? 0 : -320) : 0,
-          width: isMobile ? 256 : isCollapsed ? 80 : 256,
+          width: isMobile ? 280 : isCollapsed ? 80 : 260,
         }}
         transition={{duration: 0.3, ease: 'easeInOut'}}
-        className={`fixed left-0 top-20 z-50 flex h-[calc(100vh-5rem)] flex-col overflow-y-auto bg-white shadow-2xl lg:top-24 lg:h-[calc(100vh-6rem)] ${
-          isMobile ? 'w-64' : isCollapsed ? 'w-20' : 'w-64'
+        className={`fixed left-0 flex flex-col overflow-y-auto bg-white shadow-2xl ${
+          isMobile
+            ? 'z-50 w-[280px]'
+            : isCollapsed
+              ? 'z-10 w-20'
+              : 'z-10 w-[260px]'
         }`}
+        style={{
+          // Mobile: full screen from top, Desktop: below header
+          top: isMobile ? 0 : `${headerHeight}px`,
+          height: isMobile ? '100vh' : `calc(100vh - ${headerHeight}px)`,
+        }}
       >
-        <div className="scrollbar-hide flex-1 overflow-y-auto py-4">
-          <ul className="space-y-1 px-2">{menuItems.map(renderMenuItem)}</ul>
-        </div>
+        {/* Header Gradient Line */}
+        <motion.div
+          initial={{scaleX: 0}}
+          animate={{scaleX: 1}}
+          transition={{duration: 0.5}}
+          className="h-1 w-full origin-left bg-gradient-to-r from-orange-500 via-red-500 to-orange-500"
+        />
 
-       
+        {/* Close button for mobile */}
+        {isMobile && sidebarOpen && (
+          <div className="flex justify-end p-3">
+            <motion.button
+              whileTap={{scale: 0.9}}
+              onClick={() => setSidebarOpen && setSidebarOpen(false)}
+              className="text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-full p-2"
+            >
+              <svg
+                className="h-6 w-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </motion.button>
+          </div>
+        )}
+
+        {/* Menu Items - Directly after gradient line */}
+        <motion.div
+          initial={{opacity: 0}}
+          animate={{opacity: 1}}
+          transition={{duration: 0.5, delay: 0.1}}
+          className="scrollbar-hide flex-1 overflow-y-auto py-3"
+        >
+          <ul className="space-y-1">{menuItems.map(renderMenuItem)}</ul>
+        </motion.div>
+
+        {/* Footer Section - User Info */}
+        <motion.div
+          initial={{opacity: 0, y: 20}}
+          animate={{opacity: 1, y: 0}}
+          transition={{duration: 0.4, delay: 0.2}}
+          className="border-gray-200 mt-auto flex-shrink-0 border-t p-3"
+        >
+          <motion.div
+            whileHover={{x: 4}}
+            whileTap={{scale: 0.98}}
+            className="hover:bg-gray-100 flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-all"
+          >
+            <motion.div
+              whileHover={{scale: 1.1}}
+              className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 text-sm font-bold text-white shadow-md"
+            >
+              GU
+            </motion.div>
+            {(!isCollapsed || isMobile) && (
+              <div className="flex min-w-0 flex-col">
+                <span className="text-gray-700 truncate text-sm font-semibold">
+                  Guest User
+                </span>
+                <span className="text-gray-400 text-xs">Login to bet</span>
+              </div>
+            )}
+          </motion.div>
+        </motion.div>
 
         {/* Collapse toggle (Desktop only) */}
         {!isMobile && (
-          <button
+          <motion.button
+            whileHover={{scale: 1.1}}
+            whileTap={{scale: 0.9}}
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="border-gray-200 hover:bg-gray-50 absolute -right-3 top-4 rounded-full border bg-white p-1 shadow-sm"
+            className="border-gray-300 absolute -right-3 z-20 rounded-full border bg-white p-1.5 shadow-md transition-all duration-200 hover:border-orange-300 hover:shadow-lg"
+            style={{top: '20px'}}
           >
-            {isCollapsed ? <MdChevronRight /> : <MdChevronLeft />}
-          </button>
+            <motion.div
+              animate={{rotate: isCollapsed ? 0 : 180}}
+              transition={{duration: 0.3}}
+            >
+              {isCollapsed ? (
+                <MdChevronRight className="text-gray-600 text-sm" />
+              ) : (
+                <MdChevronLeft className="text-gray-600 text-sm" />
+              )}
+            </motion.div>
+          </motion.button>
         )}
       </motion.aside>
 
-      <style>{`
+      <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }

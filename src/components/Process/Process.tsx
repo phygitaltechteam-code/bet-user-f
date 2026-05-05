@@ -38,7 +38,6 @@ const Process: React.FC = () => {
     }
   }, [languages]);
 
-
   const onSubmit = (data: FormValues) => {
     addProcess(data);
     console.log(data);
